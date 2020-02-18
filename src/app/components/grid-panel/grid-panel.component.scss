@@ -1,0 +1,13 @@
+.led {
+  border-radius: 50%;
+  background-color: red;
+  width: .75rem;
+  height: .75rem;
+
+  &_off {
+    @extend .led;
+    background-color: gray;
+  }
+}
+
+

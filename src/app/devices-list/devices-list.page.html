@@ -1,0 +1,44 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Devices list</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+ <ion-list *ngIf="showUnpairedList()">
+   <ion-item *ngFor="let device of unpaired; let idx=index">
+     <ion-label>
+       {{ device.name | deviceName }}
+     </ion-label>
+     <ion-text>
+       {{ device.id }}
+     </ion-text>
+     <ion-button fill="outline" slot="end" (click)="connectDevice(device.address)">
+       CONNECT
+     </ion-button>
+   </ion-item>
+ </ion-list>
+</ion-content>
+
+<ion-footer>
+  <ion-grid>
+    <ion-row>
+      <ion-col size="6">
+        <ion-button
+          expand="block"
+          (click)="discoverUnpaired()"
+        >
+          Reload
+        </ion-button>
+      </ion-col>
+      <ion-col size="6">
+        <ion-button
+          expand="block"
+          (click)="returnHome()"
+        >
+          Cancel
+        </ion-button>        
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-footer>
