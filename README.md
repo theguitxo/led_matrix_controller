@@ -29,3 +29,8 @@ The app will be launch in the phone
 ## iOS
 
 The project has the Android platform, for build to  iOS must add their platform, build it and install into an iOS device.
+
+## Blog
+
+You can read a post (in spanish) about this repository in this [url](https://www.guitxo.com/2020/06/28/arduino-y-matriz-de-leds-ionic/)
+
