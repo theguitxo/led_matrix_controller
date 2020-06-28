@@ -1,165 +1,134 @@
-import { Component, OnInit, NgZone } from '@angular/core';
+import { Component, NgZone, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { BtDevice } from '../interfaces/bt-device';
-import { BluetoothSerial } from '@ionic-native/bluetooth-serial/ngx';
-import { LoadingController } from '@ionic/angular';
+import { LoadingService } from '../services/loading.service';
+import { Subscription } from 'rxjs';
+import { BtService } from '../services/bt.service';
+import { LogService } from '../services/log.service';
 
 @Component({
-  selector: 'app-devices-list',
-  templateUrl: './devices-list.page.html',
-  styleUrls: ['./devices-list.page.scss'],
+  selector: "app-devices-list",
+  templateUrl: "./devices-list.page.html",
 })
-export class DevicesListPage implements OnInit {
-
-  // list of unpaired devices
-  unpaired: Array<BtDevice>;
-
-  // object that shows a spinner while loading data or execute actions
-  loadingObject: any;
-
-  // for control if list is loaded and if an error has been occurred
-  listLoaded: boolean;
-  errorListing: boolean;
-
-  /**
-   * constructor
-   * @param router 
-   * @param btSerial 
-   * @param loadingCtrl 
-   * @param zone 
-   */
+export class DevicesListPage implements OnInit, OnDestroy {
   constructor(
     private router: Router,
-    private btSerial: BluetoothSerial,
-    private loadingCtrl: LoadingController,
-    private zone: NgZone
-  ) { }
+    private bt: BtService,
+    private zone: NgZone,
+    private loading: LoadingService,
+    private logger: LogService,
+  ) {}
 
+  unpairedList: Array<BtDevice>;
+
+  stateSubscription: Subscription;
+  unpairedSubscription: Subscription;
+  connectedSubscription: Subscription;
+
+  get haveUnpairedDevices(): boolean {
+    return this.unpairedList && this.unpairedList.length > 0;
+  }
+  
   /**
    * ngOnInit
-   * (Angular lifecycle)
-   * @description inits the properties used in the search of unpaired devices and
-   *              it subscribes to the event when an unpaired device is found
+   * 
+   * starts three subscriptions: 
+   *  control the unpaired devices discovered by the phone
+   *  check the state of the bluetooth
+   *  check if the device is connected or not
    */
   ngOnInit(): void {
-    this.initListProperties();
-
-    this.btSerial.setDeviceDiscoveredListener().subscribe(
-      (current: BtDevice) => {
-        // checks if the device discovered is already included
-        // in the list of discovered unpaired devices, if not, includes it
-        const found = this.unpaired.find(element => element.id === current.id);
-        if (found === undefined) {
-          this.unpaired.push(current);
-        }
-      }
+    this.unpairedSubscription = this.bt.unpaired$.subscribe(
+      (res) => {
+        this.zone.run(() => this.unpairedList = res);
+      },
+      (error) => {
+        this.logger.messageConsole(`Error: ${error}`, this.constructor.name);
+      },
     );
+    this.stateSubscription = this.bt.state$.subscribe((res) => {
+      this.logger.messageConsole(`stateBT: ${res}`, this.constructor.name);
+      if (!res) {
+        this.returnHome();
+      }
+    });    
+    this.connectedSubscription = this.bt.connected$.subscribe(      
+      (res) => {
+        this.logger.messageConsole(`connectedBT: ${res}`, this.constructor.name);
+        if (res) {
+          this.returnHome();
+        }
+      },
+    );
+  }
+
+  /**
+   * ngOnDestroy
+   *
+   * when the component is destroyed, the subscriptions will be removed
+   */
+  ngOnDestroy(): void {
+    this.unpairedSubscription.unsubscribe();
+    this.stateSubscription.unsubscribe();
+    this.connectedSubscription.unsubscribe();
+  }
+
+  /**
+   * ionViewWillEnter
+   * 
+   * when the app starts to enter in the page, inits the list of unpaired devices
+   * andd checks the state of the bluetooth
+   */
+  ionViewWillEnter(): void {
+    this.bt.stateBT();
+    this.unpairedList = [];    
   }
 
   /**
    * ionViewDidEnter
-   * (Inoic lifecycle)
-   * @description calls the function that search devices that aren't paired
+   * 
+   * when the app has been finish to enter in the page, calls the method to discover unpaired devices
    */
   ionViewDidEnter(): void {
     this.discoverUnpaired();
   }
-
+  
   /**
    * ionViewWillLeave
-   * (Ionic lifecycle)
-   * @description kills any loader that still are been working
+   * 
+   * when the app starts to leave the page, removes any possible
+   * loading spinner that works for not show in the next page
    */
   ionViewWillLeave(): void {
-    this.loadingObject.dismiss();
+    this.loading.hideLoading();
   }
 
   /**
-   * returnHome
-   * @description used to return to home page when user clicks over 'Cancel' button
-   */
-  returnHome(): void {
-    this.router.navigate(['/home']);
-  }
-
-  /**
-   * initListProperties
-   * @description initialize the propierties used in the search of unpaired devices
-   */
-  initListProperties(): void {
-    this.unpaired = [];
-    this.listLoaded = false;
-    this.errorListing = false;
-  }
-
-  /**
-   * showUnpairedList
-   * @description checks if the page must shows or not the list of unpaired devices
-   * @returns boolean
-   */
-  showUnpairedList(): boolean {
-    return (this.listLoaded && !this.errorListing);
-  }
-
-  /**
-   * discoverUnpaired
-   * @description gets the list of unpaired devices
+   * discoveredUnpaired
+   * 
+   * starts the list of unpaired devices and calls the method to discover them
    */
   discoverUnpaired(): void {
-    this.initListProperties();
-    this.showLoading('Getting devices...');
-
-    this.btSerial.discoverUnpaired()
-      .then((device) => {
-        console.log(this.unpaired);
-      })
-      .catch((error) => {
-        alert(`Error searching devices: ${error}`);
-        this.errorListing = true;
-      })
-      .finally(() => {
-        this.hideLoading();
-        this.listLoaded = true;
-      });
+    this.unpairedList = [];
+    this.bt.discoverUnpaired();
   }
 
   /**
-   * connectDevice
-   * @description tries to connect a devices, if it's success, navigates to home, if not, shows an alert message
-   * @param address address of the device to connect
+   * return Home
+   * 
+   * navigates to the home page
+   */
+  returnHome(): void {
+    this.zone.run(() => this.router.navigate(["/home"]));
+  }
+
+  /**
+   * connectDevices
+   * 
+   * tries to connect with a device of the list of discovered devices
+   * @param {string} address address of the device to connect
    */
   connectDevice(address): void {
-    this.showLoading('Connecting device...');
-
-    this.btSerial.connect(address).subscribe(
-      () => {
-        this.zone.run(async () => await this.router.navigate(['/home']));
-      },
-      () => {
-        alert(`Error connecting device`);
-        this.hideLoading();
-      }
-    );
-  }
-
-  /**
-   * showLoading
-   * @param message 
-   * @param translucent 
-   */
-  async showLoading(message: string, translucent: boolean = true): Promise<any> {
-    this.loadingObject = await this.loadingCtrl.create({
-      spinner: 'circular',
-      message,
-      translucent
-    });
-    await this.loadingObject.present();
-  }
-
-  /**
-   * hideLoading
-   */
-  hideLoading(): void {
-    this.loadingObject.dismiss();
+    this.bt.connectDevice(address);
   }
 }

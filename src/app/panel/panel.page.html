@@ -1,25 +1,19 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>Panels</ion-title>
-  </ion-toolbar>
-</ion-header>
+<app-header title="{{ 'panels.title' | translate }}" backHref="home"></app-header>
 
 <ion-content>
-  
   <ion-grid>
     <ion-row>
       <ion-col 
-        *ngFor="let button of panelButtons"
+        *ngFor="let item of panels"
         size="6" 
         size-md="6" 
         size-lg="3"
       >
-        <ion-button
-          (click)="showPanel(button.code)"
+        <app-grid-panel
+          [leds]="item.data"
+          [name]="getPanelName(item)"
+          (click)="showPanel(item)"
         >
-          {{ button.name }}
-        </ion-button>
-        <app-grid-panel>
         </app-grid-panel>        
       </ion-col>
     </ion-row>

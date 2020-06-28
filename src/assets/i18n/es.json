@@ -1,0 +1,74 @@
+{
+  "common": {
+    "connect": "Conectar",
+    "disconnect": "Desconectar",
+    "confirm": "Confirmar",
+    "cancel": "Cancelar",
+    "ok": "Ok",
+    "reload": "Recargar",
+    "send": "Enviar",
+    "clean": "Limpiar",
+    "sendingImage": "Enviando imagen..."
+  },
+  "home": {
+    "title": "Arduino control",
+    "disabledBluetooth": {
+      "text": "Bluetooth esta desactivado. Por favor, activelo para contintuar",
+      "button": "Activar Bluetooth"
+    },
+    "enabledBluetooth": {
+      "isEnabled": "Bluetooth esta activo",
+      "deviceConnected": {
+        "info1": "Dispositivo conectado, ahora puedes...",
+        "info2": "...desconectar el dispositivo",
+        "info3": "...seleccionar un panel para mostrarlo en la matriz de leds",
+        "info4": "...o crear su propio panel"
+      },
+      "options": {
+        "showPanels": "Mostrar paneles",
+        "selectDevice": "Seleccionar dispositivo",
+        "createPanel": "Crear panel"
+      },
+      "noDeviceSelected": "Dispositivo no conectado, por favor, conecte el dispositivo que controla la matriz de leds"
+    },
+    "disconnect": "¿Esta seguro de desconectar el dispositivo?"
+  },
+  "devices": {
+    "title": "Lista de dispositivos"
+  },
+  "customPanel": {
+    "title": "Panel personalizado",
+    "instructions": "Puede encender o apagar cada led de la matriz pulsandolo. Cuando todo este listo, pulse en el botón 'Enviar', para mostrar el panel en la matriz de leds.",
+    "cleaningMatrix": "Limpiando matriz de leds..."
+  },
+  "panels": {
+    "title": "Paneles",
+    "loadingPanels": "Cargando la información de los paneles...",
+    "errorLoadingPanels": "Se ha producido un error cargando la información de los paneles",
+    "nameNotDefined": "Sin nombre"
+  },
+  "btService": {
+    "searchingDevices": "Buscando dispositivos...",
+    "connectingDevice": "Conectando dispositivo...",
+    "disconnectDevice": "Desconectando dispositivo...",
+    "deviceDisconnected": "El dispositivo se ha desconectado",
+    "errorOnDisconnect": "Error desconectando el dispositivo",
+    "appErrorOnDisconnect": "La aplicación ha producido un error al desconectar el dispositivo"
+  },
+  "menu": {
+    "title": "Opciones",
+    "options": {
+      "language": {
+        "title": "Idioma",
+        "options": {
+          "english": {
+            "title": "Inglés"
+          },
+          "spanish": {
+            "title": "Español"
+          }
+        }
+      }
+    }
+  }
+}

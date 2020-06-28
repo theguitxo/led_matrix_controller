@@ -1,0 +1,42 @@
+  <ion-menu side="start" menuId="first" contentId="main">
+    <ion-header>
+      <ion-toolbar color="primary">
+        <ion-title>{{ 'menu.title' | translate }}</ion-title>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content>
+      <ion-menu-toggle auto-hide="false">
+      </ion-menu-toggle>
+      <ion-item lines="none" (click)="toggleLanguages()">
+        <ion-icon src="assets/svg/language-outline.svg" slot="start"></ion-icon>
+        {{ 'menu.options.language.title' | translate }}
+        <ion-icon slot="end" [name]="openLanguages ? 'arrow-dropdown' : 'arrow-dropright'"></ion-icon>
+      </ion-item>           
+      <ion-menu-toggle auto-hide="false">
+        <ion-list line="none">
+          <ion-item
+            menuClose 
+            [hidden]="!openLanguages" 
+            (click)="changeLanguage('es')">
+            <ion-avatar slot="start">
+              <img src="assets/flags/es.jpg">
+            </ion-avatar>
+            <ion-text>
+              {{ 'menu.options.language.options.spanish.title' | translate }}
+            </ion-text>
+          </ion-item>
+          <ion-item
+            menuClose
+            [hidden]="!openLanguages"
+            (click)="changeLanguage('en')">
+            <ion-avatar slot="start">
+              <img src="assets/flags/en.jpg">
+            </ion-avatar>
+            <ion-text>
+              {{ 'menu.options.language.options.english.title' | translate }}
+            </ion-text>
+          </ion-item>
+        </ion-list>
+      </ion-menu-toggle>    
+    </ion-content>
+  </ion-menu>

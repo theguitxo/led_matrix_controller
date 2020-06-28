@@ -1,0 +1,74 @@
+{
+  "common": {
+    "connect": "Connect",
+    "disconnect": "Disconnect",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "ok": "Ok",
+    "reload": "Reload",
+    "send": "Send",
+    "clean": "Clean",
+    "sendingImage": "Sending image..."
+  },
+  "home": {
+    "title": "Arduino control",
+    "disabledBluetooth": {
+      "text": "Bluetooth isn't enabled. Please, enable it to continue",
+      "button": "Enable Bluetooth"
+    },
+    "enabledBluetooth": {
+      "isEnabled": "Bluetooth is enabled",
+      "deviceConnected": {
+        "info1": "Device connected, now you can...",
+        "info2": "...disconnect the device",
+        "info3": "...select a panel to show in the leds matrix",
+        "info4": "...or create your own panel"
+      },
+      "options": {
+        "showPanels": "Show panels",
+        "selectDevice": "Select device",
+        "createPanel": "Create panel"
+      },
+      "noDeviceSelected": "No device connected, please, connect the device to control the leds matrix"
+    },
+    "disconnect": "Are you sure to disconnect the device?"
+  },
+  "devices": {
+    "title": "Devices list"
+  },
+  "customPanel": {
+    "title": "Custom panel",
+    "instructions": "You can put on or off each led of the grid pushing over them. When all be already, press on 'Send' button to show it in the leds grid.",    
+    "cleaningMatrix": "Cleaning matrix led..."
+  },
+  "panels": {
+    "title": "Panels",
+    "loadingPanels": "Loading panels data...",
+    "errorLoadingPanels": "An error has been occurred opening the panels data",
+    "nameNotDefined": "No name"
+  },
+  "btService": {
+    "searchingDevices": "Searching devices...",
+    "connectingDevice": "Connecting device...",
+    "disconnectDevice": "Disconnect device...",
+    "deviceDisconnected": "The device has been disconnected",
+    "errorOnDisconnect": "Error desconnecting the device",
+    "appErrorOnDisconnect": "Application error disconnecting the device"
+  },
+  "menu": {
+    "title": "Options",
+    "options": {
+      "language": {
+        "title": "Language",
+        "options": {
+          "english": {
+            "title": "English"
+          },
+          "spanish": {
+            "title": "Spanish"
+          }
+        }
+      }
+    }
+  }
+}

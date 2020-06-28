@@ -7,6 +7,8 @@ import { IonicModule } from '@ionic/angular';
 
 import { DevicesListPage } from './devices-list.page';
 import { DeviceNamePipe } from '../pipes/device-name.pipe';
+import { TranslateModule } from '@ngx-translate/core';
+import { ComponentsModule } from '../components/components.module';
 
 const routes: Routes = [
   {
@@ -20,7 +22,9 @@ const routes: Routes = [
     CommonModule,
     FormsModule,
     IonicModule,
-    RouterModule.forChild(routes)
+    RouterModule.forChild(routes),
+    TranslateModule.forChild(),
+    ComponentsModule,
   ],
   declarations: [
     DevicesListPage,

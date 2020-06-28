@@ -1,186 +1,116 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, NgZone, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
-import { BluetoothSerial } from '@ionic-native/bluetooth-serial/ngx';
-import { ToastController, AlertController, LoadingController } from '@ionic/angular';
-import { BtDevice } from '../interfaces/bt-device';
+import { AlertController } from '@ionic/angular';
+import { Subscription } from 'rxjs';
+import { BtService } from '../services/bt.service';
+import { LogService } from '../services/log.service';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
-  selector: 'app-home',
-  templateUrl: 'home.page.html',
-  styleUrls: ['home.page.scss'],
+  selector: "app-home",
+  templateUrl: "home.page.html",
 })
-export class HomePage implements OnInit {
+export class HomePage implements OnInit, OnDestroy {
+  state: boolean;
+  connected: boolean;
 
-  btIsEnabled: boolean;
-  btIsConnected: boolean;
-
-  showingMessage: boolean;
-
-  connected: Array<BtDevice>;
-
-  loading: any;
+  stateSubscription: Subscription;
+  connectedSubscription: Subscription;
 
   constructor(
-    private btSerial: BluetoothSerial,
-    private toast: ToastController,
+    private bt: BtService,
+    private zone: NgZone,
     private router: Router,
     private alertCtrl: AlertController,
-    private loadingCtrl: LoadingController
-  ) {}
-
+    private logger: LogService,
+    private translate: TranslateService,
+  ) {
+    this.state = false;
+    this.connected = false;
+  }
+  
   /**
    * ngOnInit
+   * 
+   * when the component starts, fires some subscriptions for get the state and connection of bluetooth device are set up
    */
-  ngOnInit() {
-    this.showingMessage = false;
-    this.connected = [];
+  ngOnInit(): void {
+    this.stateSubscription = this.bt.state$.subscribe((res) => {
+      this.logger.messageConsole(`stateBT: ${res}`, this.constructor.name);
+      this.zone.run(() => {
+        this.state = res;
+      });      
+    });
+    this.connectedSubscription = this.bt.connected$.subscribe((res) => {
+      this.logger.messageConsole(`connectedBT: ${res}`, this.constructor.name);      
+      this.zone.run(() => {
+        this.connected = res;
+      });
+    });
+  }
+
+  /**
+   * ngOnDestroy
+   * 
+   * when the component is destroyed, the subscriptions will be removed
+   */
+  ngOnDestroy(): void {
+    this.stateSubscription.unsubscribe();
+    this.connectedSubscription.unsubscribe();
   }
 
   /**
    * ionViewDidEnter
+   * 
+   * when the page finish entering, must check the state and connection of the bluetooth device
    */
-  ionViewDidEnter() {
-    this.btSerial.isConnected().then(
-      () => {
-        console.log('Bluetooth is connected');
-        this.listConnected();
-        this.btIsConnected = true;
-      },
-      () => {
-        console.log('Bluetooth isn\'t connected');
-        this.btIsConnected = false;
-      }
-    );
+  ionViewDidEnter(): void {
+    this.bt.stateBT();
+    this.bt.connectedBT();
   }
 
   /**
-   * ionViewWillLeave
+   * enableBT
+   * 
+   * calls the method to check if the bluetoot device is enabled or not
    */
-  ionViewWillLeave() {
-    this.removeLoadingSpinner();
+  enableBT(): void {
+    this.bt.enableBT();
   }
 
   /**
-   * toListDevices
+   * goTo
+   * 
+   * navigates to a page of the app
+   * @param {string} destination identification in the routing table of the destination
    */
-  toListDevices(): void {
-    this.btSerial.isEnabled().then(
-      () => {
-        this.router.navigate(['/devices-list']);
-      },
-      () => {
-        this.showToast(`Bluetooth isn't enabled, please enable it`, 2000);
-      }
-    );
-  }
-
-  /**
-   * showToast
-   * @param message 
-   * @param duration 
-   */
-  async showToast(message: string, duration: number) {
-    if(!this.showingMessage) {
-      this.showingMessage = true;
-      const toast = await this.toast.create({
-        message,
-        duration,
-        showCloseButton: true
-      });
-      toast.onDidDismiss().then(
-        () => {
-          this.showingMessage = false;
-        }
-      );
-      toast.present();
-    }
-  }
-  /**
-   * listConnected
-   */
-  async listConnected(): Promise<any> {
-    await this.showLoadingSpinner('Loading connected devices');
-    this.btSerial.list()
-      .then(
-        (data) => {
-          console.log(data);
-          this.connected = data;
-          this.removeLoadingSpinner();
-        },
-        () => {
-          this.showToast(`An error has been occurred when listing devices`, 2000);
-          this.removeLoadingSpinner();
-        }
-      );
+  goTo(destination: string): void {
+    this.zone.run(() => this.router.navigate([destination]));
   }
 
   /**
    * disconnectDevice
+   * 
+   * opens a dialog box about disconnect the bluetooth device and manages the answer
    */
-  async disconnectDevice() {
+  async disconnectDevice(): Promise<any> {
     const alert = await this.alertCtrl.create({
-      header: 'Disconnect',
-      subHeader: 'Confirm',
-      message: 'Are you sure to disconnect the device?',
+      header: this.translate.instant('common.disconnect'),
+      subHeader: this.translate.instant('common.confirm'),
+      message: this.translate.instant('home.disconnect'),
       buttons: [
         {
-          text: 'Cancel',
-          role: 'cancel',
+          text: this.translate.instant('common.cancel'),
+          role: "cancel",
         },
         {
-          text: 'Ok',
+          text: this.translate.instant('common.ok'),
           handler: () => {
-            this.handlerDisconnectDevice();
-          }
-        }
-      ]
+            this.bt.disconnectDevice();              
+          },
+        },
+      ],
     });
     await alert.present();
-
-  }
-
-  /**
-   * handlerDisconnectDevice
-   */
-  async handlerDisconnectDevice() {
-    await this.showLoadingSpinner('Disconnect device');
-    this.btSerial.disconnect().then(
-      () => {
-        this.btIsConnected = false;
-        this.connected = [];
-        this.removeLoadingSpinner();
-      },
-      async () => {
-        this.removeLoadingSpinner();
-        const errorAlert = await this.alertCtrl.create({
-          header: 'Disconnect',
-          subHeader: 'Error',
-          message: 'An error has been occurred on disconnect the device',
-          buttons: ['OK']
-        });
-        await errorAlert.present();
-      }
-    );
-  }
-
-  /**
-   * removeLoadingSpinner
-   */
-  async removeLoadingSpinner(): Promise<any> {
-    if (typeof this.loading === 'object') {
-      await this.loading.dismiss();
-    }
-  }
-
-  /**
-   * showLoadingSpinner
-   */
-  async showLoadingSpinner(message: string): Promise<any> {
-    this.loading = await this.loadingCtrl.create({
-      spinner: 'circular',
-      message,
-      translucent: true
-    });
-    await this.loading.present();
   }
 }

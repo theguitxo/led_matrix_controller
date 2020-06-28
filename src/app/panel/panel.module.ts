@@ -6,7 +6,8 @@ import { Routes, RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 
 import { PanelPage } from './panel.page';
-import { GridPanelComponent } from '../components/grid-panel/grid-panel.component';
+import { ComponentsModule } from '../components/components.module';
+import { TranslateModule } from '@ngx-translate/core';
 
 const routes: Routes = [
   {
@@ -20,11 +21,12 @@ const routes: Routes = [
     CommonModule,
     FormsModule,
     IonicModule,
-    RouterModule.forChild(routes)
+    RouterModule.forChild(routes),
+    ComponentsModule,
+    TranslateModule.forChild(),
   ],
   declarations: [
     PanelPage,
-    GridPanelComponent
   ]
 })
 export class PanelPageModule {}

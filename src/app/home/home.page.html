@@ -1,71 +1,71 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>Arduino control</ion-title>
-  </ion-toolbar>
-</ion-header>
+<app-header title="{{ 'home.title' | translate }}"></app-header>
 
 <ion-content>
+  <ion-grid>
+    <ng-container *ngIf="state; else notEnabled">
+      <ion-row>
+        <ion-col class="ion-text-justify">
+          {{ 'home.enabledBluetooth.isEnabled' | translate }}
+        </ion-col>
+      </ion-row>
+      <ng-container *ngIf="connected; else notConnected">
+        <ion-row>
+          <ion-col class="ion-text-justify">
+            {{ 'home.enabledBluetooth.deviceConnected.info1' | translate }}
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col size="6">
+            {{ 'home.enabledBluetooth.deviceConnected.info2' | translate }}
+          </ion-col>
+          <ion-col size="6">
+            {{ 'home.enabledBluetooth.deviceConnected.info3' | translate }}
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col size="6">
+            <ion-button expand="full" (click)="disconnectDevice()">{{ 'common.disconnect' | translate }}</ion-button>
+          </ion-col>
+          <ion-col size="6">
+            <ion-button expand="full" (click)="goTo('/panels')">{{ 'home.enabledBluetooth.options.showPanels' | translate }}</ion-button>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col size="6" offset="6">
+            {{ 'home.enabledBluetooth.deviceConnected.info4' | translate }}
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col size="6" offset="6">
+            <ion-button expand="full" (click)="goTo('/custom-panel')">{{ 'home.enabledBluetooth.options.createPanel' | translate }}</ion-button>
+          </ion-col>
+        </ion-row>
+      </ng-container>
+      <ng-template #notConnected>
+        <ion-row>
+          <ion-col class="ion-text-justify">
+            {{ 'home.enabledBluetooth.noDeviceSelected' | translate }}            
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col>
+            <ion-button expand="full" (click)="goTo('/devices-list')">{{ 'home.enabledBluetooth.options.selectDevice' | translate }}</ion-button>
+          </ion-col>
+        </ion-row>
+      </ng-template>
 
-  <!-- list of connected devices-->
-  <ion-grid
-    *ngIf="btIsConnected"
-  >  
-    <ion-row>
-      <ion-col>
-        <ion-list>
-
-          <ion-list-header>
-            Connected devices
-          </ion-list-header>
-
-          <ion-item
-            *ngFor="let device of connected"
-          >
-            <ion-label>
-              {{ device.name }}
-            </ion-label>
-            <ion-button
-              slot="end"
-              (click)="disconnectDevice()"
-            >
-              Disconnect
-            </ion-button>
-          </ion-item>
-
-        </ion-list>
-      </ion-col>
-    </ion-row>
-    <ion-row>
-      <ion-col 
-        class="ion-text-end ion-padding"        
-      >
-        <ion-button
-          [routerLink]="['/panel']"
-        >
-          Show panels
-        </ion-button>
-      </ion-col>
-    </ion-row>
+    </ng-container>
+    <ng-template #notEnabled>
+      <ion-row>
+        <ion-col class="ion-text-justify">
+          {{ 'home.disabledBluetooth.text' | translate }}          
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col>
+          <ion-button expand="full" (click)="enableBT()">{{ 'home.disabledBluetooth.button' | translate }}</ion-button>
+        </ion-col>
+      </ion-row>
+    </ng-template>
   </ion-grid>
-
-  <!-- button for connect devices -->
-  <ion-grid
-    *ngIf="!btIsConnected"
-  >
-    <ion-row>
-      <ion-col>
-        <ion-button expand="full" (click)="toListDevices()">
-          List bluetooth devices
-        </ion-button>
-      </ion-col>
-    </ion-row>
-    <ion-row>
-      <ion-col class="ion-text-end ion-padding">
-        <ion-button [routerLink]="['/panel']">
-          Show panels
-        </ion-button>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
-
 </ion-content>

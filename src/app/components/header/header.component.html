@@ -1,0 +1,11 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons *ngIf="backHref" slot="start">
+      <ion-back-button [defaultHref]="backHref"></ion-back-button>
+    </ion-buttons>    
+    <ion-title>{{ title }}</ion-title>
+    <ion-buttons slot="end">      
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>

@@ -1,0 +1,27 @@
+<app-header title="{{ 'customPanel.title' | translate }}" backHref="home"></app-header>
+
+<ion-content>
+  <ion-grid>
+    <ion-row>
+      <ion-col
+        size="12"
+        size-md="6">
+        <app-grid-panel [leds]="panel" [custom]="true" (changeLed)="updatePanel($event)">
+        </app-grid-panel>
+      </ion-col>
+      <ion-col
+        size="12"
+        size-md="6">
+        <p class="ion-text-justify">
+          {{ 'customPanel.instructions' | translate }}
+        </p>
+        <p>
+          <ion-button expand="full" (click)="sendPanel()">{{ 'common.send' | translate }}</ion-button>
+        </p>
+        <p>
+          <ion-button expand="full" (click)="cleanPanel()">{{ 'common.clean' | translate }}</ion-button>
+        </p>
+      </ion-col>        
+    </ion-row>
+  </ion-grid>
+</ion-content>
