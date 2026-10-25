@@ -30,7 +30,7 @@ The app will be launch in the phone
 
 The project has the Android platform, for build to  iOS must add their platform, build it and install into an iOS device.
 
-## Blog
+## Documentation
 
-You can read a post (in spanish) about this repository in this [url](https://www.guitxo.com/2020/06/28/arduino-y-matriz-de-leds-ionic/)
+[Here a file with an explanation about this repository (in spanish)](https://github.com/theguitxo/led_matrix_controller/blob/master/arduino.matriz.leds.pdf)
 
